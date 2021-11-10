@@ -1,6 +1,3 @@
-library(EnvStats)
-library(Rfast)
-
 # MLE of Binomial Distribution
 Binomial_Dist <- function(sample_vec)
 {
@@ -26,8 +23,10 @@ Unif_Dist <- function(sample_vec)
 Geometric_Dist <- function(sample_vec)
 {
   # sample_vec = rgeom(n,0.1)
-  egeom(sample_vec, method = "mle")
-  $parameters
+  #egeom(sample_vec, method = "mle")
+  #$parameters
+  mle <- length(sample_vec) / (length(sample_vec) + sum(sample_vec))
+  print(mle)
 }
 
 # MLE of Beta Distribution
