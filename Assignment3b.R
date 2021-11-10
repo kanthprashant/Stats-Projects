@@ -14,3 +14,57 @@ Norm_Dist <- function(sample_vec)
   cat("\n\nsecond method of moments estimate standard deviation estimate in normal distribution ", sdev)
   
 }
+
+main <- function(sample_vec,dist_type)
+{
+  
+  
+  if(dist_type == "uniform" || dist_type == "Uniform" || dist_type == "UNIFORM")
+  {
+    Unif_Dist(sample_vec)
+  }
+  else if(dist_type == "normal" || dist_type == "Normal" || dist_type == "NORMAL")
+  {
+    Norm_Dist(sample_vec)
+  }
+  else if(dist_type=="poisson"||dist_type=="Poisson"||dist_type=="POISSON")
+  {
+
+    Poisson_Dist(sample_vec)
+  }
+  else if(dist_type=="gamma"||dist_type=="Gamma"||dist_type=="GAMMA")
+  {
+    
+    Gamma_dist(sample_vec)
+  }
+  
+  else if(dist_type=="beta"||dist_type=="Beta"||dist_type=="BETA")
+  {
+    
+    Beta_dist(sample_vec)
+  }
+  
+  else if(dist_type=="geometric"||dist_type=="Geometric"||dist_type=="GEOMETRIC")
+  {
+    
+    Geometric_Dist(sample_vec)
+  }
+  else if(dist_type=="binomial"||dist_type=="Binomial"||dist_type=="BINOMIAL")
+  {
+    Binomial_Dist(sample_vec)
+  }
+  else if(dist_type=="exponential"||dist_type=="Exponential"||dist_type=="EXPONENTIAL")
+  {
+    Exponential_Dist(sample_vec)
+  }
+  else if(dist_type=="multinomial"||dist_type=="Multinomial"||dist_type=="MULTINOMIAL")
+  {
+    Multinomial_Dist(sample_vec)
+  }
+  
+  else if(dist_type =="Multivariate Normal"){
+    Multivariate_Normal_dist(sample_vec)
+  }
+  
+}
+
