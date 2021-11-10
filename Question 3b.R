@@ -30,11 +30,11 @@ Geometric_Dist <- function(sample_vec)
 }
 
 # MLE of Beta Distribution
-Beta_Dist <- function(sample_vec)
-{
-  ebeta(sample_vec)
-  $parameters
-}
+#Beta_Dist <- function(sample_vec)
+#{
+#  ebeta(sample_vec)
+#  $parameters
+#}
 
 # MLE of Exponential Distribution
 Exponential_Dist <- function(sample_vec)
