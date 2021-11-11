@@ -12,6 +12,34 @@ calculate_binom_mle <- function(sample) {
   return(mle)
 }
 
+# calculate mle of multivariate distribution
+calculate_multivariate_mle <- function(sample) {
+  # calculate negative log likelihood
+  nll <- function(parameters, y) {
+    mu <- parameters[0]
+    sigma <- parameters[1]
+    -sum(dmvnorm(x = y, mu = mu, Sigma = sigma, log = True))
+  }
+  
+  mle = optim(par = c(mu = 1, sigma = 1), fn = nll, data = sample, method = "BFGS",
+              control = list(parscale = c(mu = 1, sigma = 1)))
+  return(mle)
+}
+
+# calculate mle of multivariate distribution
+calculate_multivariate_mle <- function(sample) {
+  # calculate negative log likelihood
+  nll <- function(parameters, y) {
+    mu <- parameters[0]
+    sigma <- parameters[1]
+    -sum(dmvnorm(x = y, mu = mu, Sigma = sigma, log = True))
+  }
+  
+  mle = optim(par = c(mu = 1, sigma = 1), fn = nll, data = sample, method = "BFGS",
+              control = list(parscale = c(mu = 1, sigma = 1)))
+  return(mle)
+}
+
 # calculate mle of multinomial distribution -
 calculate_multinom_mle <- function(sample) {
   # calculate negative log likelihood
@@ -185,6 +213,7 @@ main <- function (sample_vec,dist_type)
       posison_os = onestep_pois(sample, 8, 100)
       cat("The approximated MLE value using one-step is",posison_os,"\n")
     }
+
     else if(dist_type=="geometric"||dist_type=="Geometric"||dist_type=="GEOMETRIC")
     {
       
@@ -223,14 +252,21 @@ main <- function (sample_vec,dist_type)
       print(sample_mle$par)
     }
     
-    else if(dist_type =="Multivariate Normal")
+    else if(dist_type =="Multivariate Normal"||dist_type=="multivariate normal"||dist_type=="MULTIVARIATE NORMAL")
       
     {
       cat("\n\ndistribution type is ",dist_type)
       cat("\n\nsample is\n",sample,"\n")
       cat("MLE is given Below\n")
-      Multivariate_Normal_dist(sample_vec)
+      sample_mle = calculate_multivariate_mle(sample)
+      print(sample_mle$par)
     }
     
-  }
+
+}
+
+
+  
+  
+
 
