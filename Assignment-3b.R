@@ -1,3 +1,4 @@
+library(mvtnorm)
 # calculate mle of binomial distribution -
 calculate_binom_mle <- function(sample) {
   # calculate negative log likelihood
@@ -15,27 +16,13 @@ calculate_binom_mle <- function(sample) {
 # calculate mle of multivariate distribution
 calculate_multivariate_mle <- function(sample) {
   # calculate negative log likelihood
-  nll <- function(parameters, y) {
-    mu <- parameters[0]
-    sigma <- parameters[1]
-    -sum(dmvnorm(x = y, mu = mu, Sigma = sigma, log = True))
+  nll <- function(par, data) {
+    mu <- par[0]
+    sigma <- par[1]
+    -sum(dmvnorm(x = data, mu = mu, Sigma = sigma, log = True))
   }
   
-  mle = optim(par = c(mu = 1, sigma = 1), fn = nll, data = sample, method = "BFGS",
-              control = list(parscale = c(mu = 1, sigma = 1)))
-  return(mle)
-}
-
-# calculate mle of multivariate distribution
-calculate_multivariate_mle <- function(sample) {
-  # calculate negative log likelihood
-  nll <- function(parameters, y) {
-    mu <- parameters[0]
-    sigma <- parameters[1]
-    -sum(dmvnorm(x = y, mu = mu, Sigma = sigma, log = True))
-  }
-  
-  mle = optim(par = c(mu = 1, sigma = 1), fn = nll, data = sample, method = "BFGS",
+  mle = optim(par = c(mu = 1, sigma = 1), fn = nll, data = sample, method = "L-BFGS-B",
               control = list(parscale = c(mu = 1, sigma = 1)))
   return(mle)
 }
@@ -53,8 +40,7 @@ calculate_multinom_mle <- function(sample) {
   }
   len = nrow(sample)
   mle = optim(par <- rep(1/len,len), fn = nll, data = sample, method = "L-BFGS-B",
-              lower = rep(0.0000000001,len),upper = rep(1,len)) #, 
-          #    method = "L-BFGS-B")
+              lower = rep(0.0000000001,len),upper = rep(1,len))
   return(mle)
 }
 
@@ -255,8 +241,12 @@ main <- function (sample_vec,dist_type)
     else if(dist_type =="Multivariate Normal"||dist_type=="multivariate normal"||dist_type=="MULTIVARIATE NORMAL")
       
     {
+      sigma <- matrix(c(3,2,2,6), 2, 2)
+      mu <- c(5,10)
+      sample <- rmvnorm(10, mean = mu, sigma = sigma)
       cat("\n\ndistribution type is ",dist_type)
-      cat("\n\nsample is\n",sample,"\n")
+      cat("\n\nsample is")
+      print(sample)
       cat("MLE is given Below\n")
       sample_mle = calculate_multivariate_mle(sample)
       print(sample_mle$par)
@@ -266,7 +256,4 @@ main <- function (sample_vec,dist_type)
 }
 
 
-  
-  
-
-
+#main(c(),'multivariate normal')
