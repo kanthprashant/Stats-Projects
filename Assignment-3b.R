@@ -1,3 +1,4 @@
+library(mvtnorm)
 # calculate mle of binomial distribution -
 calculate_binom_mle <- function(sample) {
   # calculate negative log likelihood
@@ -15,13 +16,13 @@ calculate_binom_mle <- function(sample) {
 # calculate mle of multivariate distribution
 calculate_multivariate_mle <- function(sample) {
   # calculate negative log likelihood
-  nll <- function(parameters, y) {
-    mu <- parameters[0]
-    sigma <- parameters[1]
-    -sum(dmvnorm(x = y, mu = mu, Sigma = sigma, log = True))
+  nll <- function(par, data) {
+    mu <- par[0]
+    sigma <- par[1]
+    -sum(dmvnorm(x = data, mu = mu, Sigma = sigma, log = True))
   }
   
-  mle = optim(par = c(mu = 1, sigma = 1), fn = nll, data = sample, method = "BFGS",
+  mle = optim(par = c(mu = 1, sigma = 1), fn = nll, data = sample, method = "L-BFGS-B",
               control = list(parscale = c(mu = 1, sigma = 1)))
   return(mle)
 }
@@ -38,9 +39,8 @@ calculate_multinom_mle <- function(sample) {
     -sum(apply(X = data,MARGIN = 2,FUN = dmultinom,size =1, prob = p, log = TRUE))
   }
   len = nrow(sample)
-  mle = optim(par <- rep(1/len,len), fn = nll, data = sample, ,method = "L-BFGS-B",
-              lower = rep(0.0000000001,len),upper = rep(1,len)) #, 
-          #    method = "L-BFGS-B")
+  mle = optim(par <- rep(1/len,len), fn = nll, data = sample, method = "L-BFGS-B",
+              lower = rep(0.0000000001,len),upper = rep(1,len))
   return(mle)
 }
 
@@ -69,6 +69,35 @@ calculate_poisson_mle <- function(sample) {
   return(mle)
 }
 
+# calculate one step of poisson
+onestep_pois <- function(sample, m, reptn = 100)
+{
+  #mean of sample poisson distribution
+  x_mean <- mean(sample)
+  
+  for(i in 1:reptn)
+  {
+    #log-likelihood of PDF of poisson
+    lglik <- expression(log((exp(-m)*(m^(sample))/factorial(sample))))
+    #First partial derivative of log-likelihood wrt mu
+    f_derv <- D(lglik, "m")
+    frst_derv <- eval(f_derv)
+    #Second partial derivative of log-likelihood wrt mu
+    s_derv <- D(f_derv, "m")
+    sec_derv <- eval(s_derv)
+    
+    sdbt <- sum(frst_derv)
+    sdbtt <- sum(sec_derv)
+    
+    #sequence that converges to MLE
+    theta <- m
+    theta.hat <- theta - (sdbt / sdbtt)
+    m <- theta.hat
+  }
+  
+  return(m)
+}
+
 # calculate mle of exponential -
 calculate_exp_mle <- function(sample) {
   nll <- function(parameters, data) {
@@ -94,6 +123,7 @@ calculate_beta_mle <- function(sample) {
   return(mle)
 }
 
+# calculate mle of uniform distribution 
 calculate_uniform_mle <- function(sample) {
   nll <- function(parameters, data) {
     min = parameters[1]
@@ -166,9 +196,9 @@ main <- function (sample_vec,dist_type)
       cat("\n\nsample is\n",sample,"\n")
       cat("MLE is given Below\n")
       print(poisson_mle$par)
-      
+      posison_os = onestep_pois(sample, 8, 100)
+      cat("The approximated MLE value using one-step is",posison_os,"\n")
     }
-    
 
     else if(dist_type=="geometric"||dist_type=="Geometric"||dist_type=="GEOMETRIC")
     {
@@ -211,14 +241,19 @@ main <- function (sample_vec,dist_type)
     else if(dist_type =="Multivariate Normal"||dist_type=="multivariate normal"||dist_type=="MULTIVARIATE NORMA")
       
     {
+      sigma <- matrix(c(3,2,2,6), 2, 2)
+      mu <- c(5,10)
+      sample <- rmvnorm(10, mean = mu, sigma = sigma)
       cat("\n\ndistribution type is ",dist_type)
-      cat("\n\nsample is\n",sample,"\n")
+      cat("\n\nsample is")
+      print(sample)
       cat("MLE is given Below\n")
       sample_mle = calculate_multivariate_mle(sample)
       print(sample_mle$par)
     }
     
-}
-  
-  
 
+}
+
+
+#main(c(),'multivariate normal')
