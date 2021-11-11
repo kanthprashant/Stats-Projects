@@ -208,7 +208,7 @@ main <- function (sample_vec,dist_type)
       print(sample_mle$par)
     }
     
-    else if(dist_type =="Multivariate Normal"||dist_type=="multivariate normal"||dist_type=="MULTIVARIATE NORMAL")
+    else if(dist_type =="Multivariate Normal"||dist_type=="multivariate normal"||dist_type=="MULTIVARIATE NORMA")
       
     {
       cat("\n\ndistribution type is ",dist_type)
