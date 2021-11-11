@@ -12,6 +12,24 @@ calculate_binom_mle <- function(sample) {
   return(mle)
 }
 
+# calculate mle of multinomial distribution -
+calculate_multinom_mle <- function(sample) {
+  # calculate negative log likelihood
+  nll <- function(parameters, data) {
+    
+    p = parameters
+   # cat("p",p)
+    #-sum(dmultinom(x=data[,1], size=NULL, prob=p, log=TRUE))
+    
+    -sum(apply(X = data,MARGIN = 2,FUN = dmultinom,size =1, prob = p, log = TRUE))
+  }
+  len = nrow(sample)
+  mle = optim(par <- rep(1/len,len), fn = nll, data = sample, ,method = "L-BFGS-B",
+              lower = rep(0.0000000001,len),upper = rep(1,len)) #, 
+          #    method = "L-BFGS-B")
+  return(mle)
+}
+
 # calculate mle of geometric
 calculate_geometric_mle <- function(sample) {
   nll <- function(parameters, data) {
@@ -98,6 +116,9 @@ main <- function (sample_vec,dist_type)
     {
       uniform_sample = runif(10, -10, 10)
       uniform_mle = calculate_uniform_mle(uniform_sample)
+      cat("\n\ndistribution type is ",dist_type)
+      cat("\n\nsample is\n",sample,"\n")
+      cat("MLE is given Below\n")
       print(uniform_mle$par)
       
     }
@@ -107,6 +128,9 @@ main <- function (sample_vec,dist_type)
       sample = rbeta(10,1,10)
       cat(sample)
       sample_mle = calculate_beta_mle(sample)
+      cat("\n\ndistribution type is ",dist_type)
+      cat("\n\nsample is\n",sample,"\n")
+      cat("MLE is given Below\n")
       print(sample_mle$par)
       
     }
@@ -114,51 +138,70 @@ main <- function (sample_vec,dist_type)
     {
       sample = rnorm(10)
       normal_mle = calculate_normal_mle(sample)
+      cat("\n\ndistribution type is ",dist_type)
+      cat("\n\nsample is\n",sample,"\n")
+      cat("MLE is given Below\n")
       print(normal_mle$par)
     }
     else if(dist_type=="poisson"||dist_type=="Poisson"||dist_type=="POISSON")
     {
       
-      poisson_sample = rpois(10, 8)
-      poisson_mle = calculate_poisson_mle(poisson_sample)
+      sample = rpois(10, 8)
+      poisson_mle = calculate_poisson_mle(sample)
+      cat("\n\ndistribution type is ",dist_type)
+      cat("\n\nsample is\n",sample,"\n")
+      cat("MLE is given Below\n")
       print(poisson_mle$par)
       
     }
-    else if(dist_type=="gamma"||dist_type=="Gamma"||dist_type=="GAMMA")
-    {
-      
-      Gamma_dist(sample_vec)
-    }
+    
     
     
     
     else if(dist_type=="geometric"||dist_type=="Geometric"||dist_type=="GEOMETRIC")
     {
       
-      geom_sample = rgeom(10, 0.4)
-      geom_mle = calculate_geometric_mle(geom_sample)
+      sample = rgeom(10, 0.4)
+      cat("\n\ndistribution type is ",dist_type)
+      cat("\n\nsample is\n",sample,"\n")
+      cat("MLE is given Below\n")
+      geom_mle = calculate_geometric_mle(sample)
       print(geom_mle$par)
     }
     else if(dist_type=="binomial"||dist_type=="Binomial"||dist_type=="BINOMIAL")
     {
-      binom_sample = rbinom(4,10,0.5)
+      sample = rbinom(4,10,0.5)
+      cat("\n\ndistribution type is ",dist_type)
+      cat("\n\nsample is\n",sample,"\n")
+      cat("MLE is given Below\n")
       binom_mle = calculate_binom_mle(binom_sample)
       print(binom_mle$par)
     }
     else if(dist_type=="exponential"||dist_type=="Exponential"||dist_type=="EXPONENTIAL")
     {
       sample = rexp(5)
-      cat(sample)
+      cat("\n\ndistribution type is ",dist_type)
+      cat("\n\nsample is\n",sample,"\n")
+      cat("MLE is given Below\n")
       sample_mle = calculate_exp_mle(sample)
       print(sample_mle$par)
     }
     else if(dist_type=="multinomial"||dist_type=="Multinomial"||dist_type=="MULTINOMIAL")
     {
-      Multinomial_Dist(sample_vec)
+      sample = rmultinom(5,1,rep(1/10,10))
+      cat("\n\ndistribution type is ",dist_type)
+      cat("\n\nsample is\n",sample,"\n")
+      cat("MLE is given Below\n")
+      sample_mle = calculate_multinom_mle(sample)
+      print(sample_mle$par)
     }
     
     else if(dist_type =="Multivariate Normal")
+      
     {
+      cat("\n\ndistribution type is ",dist_type)
+      cat("\n\nsample is\n",sample,"\n")
+      cat("MLE is given Below\n")
       Multivariate_Normal_dist(sample_vec)
     }
     
