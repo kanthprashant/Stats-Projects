@@ -24,7 +24,7 @@ calculate_multinom_mle <- function(sample) {
     -sum(apply(X = data,MARGIN = 2,FUN = dmultinom,size =1, prob = p, log = TRUE))
   }
   len = nrow(sample)
-  mle = optim(par <- rep(1/len,len), fn = nll, data = sample, ,method = "L-BFGS-B",
+  mle = optim(par <- rep(1/len,len), fn = nll, data = sample, method = "L-BFGS-B",
               lower = rep(0.0000000001,len),upper = rep(1,len)) #, 
           #    method = "L-BFGS-B")
   return(mle)
@@ -55,6 +55,35 @@ calculate_poisson_mle <- function(sample) {
   return(mle)
 }
 
+# calculate one step of poisson
+onestep_pois <- function(sample, m, reptn = 100)
+{
+  #mean of sample poisson distribution
+  x_mean <- mean(sample)
+  
+  for(i in 1:reptn)
+  {
+    #log-likelihood of PDF of poisson
+    lglik <- expression(log((exp(-m)*(m^(sample))/factorial(sample))))
+    #First partial derivative of log-likelihood wrt mu
+    f_derv <- D(lglik, "m")
+    frst_derv <- eval(f_derv)
+    #Second partial derivative of log-likelihood wrt mu
+    s_derv <- D(f_derv, "m")
+    sec_derv <- eval(s_derv)
+    
+    sdbt <- sum(frst_derv)
+    sdbtt <- sum(sec_derv)
+    
+    #sequence that converges to MLE
+    theta <- m
+    theta.hat <- theta - (sdbt / sdbtt)
+    m <- theta.hat
+  }
+  
+  return(m)
+}
+
 # calculate mle of exponential -
 calculate_exp_mle <- function(sample) {
   nll <- function(parameters, data) {
@@ -80,6 +109,7 @@ calculate_beta_mle <- function(sample) {
   return(mle)
 }
 
+# calculate mle of uniform distribution 
 calculate_uniform_mle <- function(sample) {
   nll <- function(parameters, data) {
     min = parameters[1]
@@ -152,12 +182,9 @@ main <- function (sample_vec,dist_type)
       cat("\n\nsample is\n",sample,"\n")
       cat("MLE is given Below\n")
       print(poisson_mle$par)
-      
+      posison_os = onestep_pois(sample, 8, 100)
+      cat("The approximated MLE value using one-step is",posison_os,"\n")
     }
-    
-    
-    
-    
     else if(dist_type=="geometric"||dist_type=="Geometric"||dist_type=="GEOMETRIC")
     {
       
@@ -206,6 +233,4 @@ main <- function (sample_vec,dist_type)
     }
     
   }
-  
-  
 
