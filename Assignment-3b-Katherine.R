@@ -169,9 +169,7 @@ main <- function (sample_vec,dist_type)
       
     }
     
-    
-    
-    
+
     else if(dist_type=="geometric"||dist_type=="Geometric"||dist_type=="GEOMETRIC")
     {
       
@@ -210,7 +208,7 @@ main <- function (sample_vec,dist_type)
       print(sample_mle$par)
     }
     
-    else if(dist_type =="Multivariate Normal")
+    else if(dist_type =="Multivariate Normal"||dist_type=="multivariate normal"||dist_type=="MULTIVARIATE NORMAL")
       
     {
       cat("\n\ndistribution type is ",dist_type)
@@ -220,7 +218,7 @@ main <- function (sample_vec,dist_type)
       print(sample_mle$par)
     }
     
-  }
+}
   
   
 
