@@ -216,7 +216,8 @@ main <- function (sample_vec,dist_type)
       cat("\n\ndistribution type is ",dist_type)
       cat("\n\nsample is\n",sample,"\n")
       cat("MLE is given Below\n")
-      Multivariate_Normal_dist(sample_vec)
+      sample_mle = calculate_multivariate_mle(sample)
+      print(sample_mle$par)
     }
     
   }
