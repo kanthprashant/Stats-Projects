@@ -2,14 +2,11 @@ library(mvtnorm)
 # calculate mle of binomial distribution -
 calculate_binom_mle <- function(sample) {
   # calculate negative log likelihood
-  nll <- function(parameters, data) {
-    n = parameters[1]
-    p = parameters[2]
+  nll <- function(data, n, p) {
     -sum(dbinom(x=data, size=n, prob=p, log=TRUE))
   }
   
-  mle = optim(par = c(n = 10, p = 0.5), fn = nll, data = sample, 
-              control=list(parscale = c(n = 10, p = 0.5)))
+  mle = optim(par = c(p = 0.5), n = 10, fn = nll, data = sample, method = "BFGS")
   return(mle)
 }
 
@@ -215,7 +212,7 @@ main <- function (sample_vec,dist_type)
       cat("\n\ndistribution type is ",dist_type)
       cat("\n\nsample is\n",sample,"\n")
       cat("MLE is given Below\n")
-      binom_mle = calculate_binom_mle(binom_sample)
+      binom_mle = calculate_binom_mle(sample)
       print(binom_mle$par)
     }
     else if(dist_type=="exponential"||dist_type=="Exponential"||dist_type=="EXPONENTIAL")
@@ -254,5 +251,7 @@ main <- function (sample_vec,dist_type)
 
 }
 
-
 main(c(),'multivariate normal')
+
+main(c(),'binomial')
+
