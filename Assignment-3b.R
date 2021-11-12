@@ -21,7 +21,6 @@ calculate_multivariate_mle <- function(sample) {
     sigma <- par[1]
     -sum(dmvnorm(x = data, mu = mu, Sigma = sigma, log = True))
   }
-  
   mle = optim(par = c(mu = 1, sigma = 1), fn = nll, data = sample, method = "L-BFGS-B",
               control = list(parscale = c(mu = 1, sigma = 1)))
   return(mle)
@@ -256,4 +255,4 @@ main <- function (sample_vec,dist_type)
 }
 
 
-#main(c(),'multivariate normal')
+main(c(),'multivariate normal')
