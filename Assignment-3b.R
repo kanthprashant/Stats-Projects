@@ -14,13 +14,13 @@ calculate_binom_mle <- function(sample) {
 calculate_multivariate_mle <- function(sample) {
   # calculate negative log likelihood
   nll <- function(par, data) {
-    mu <- par[0]
-    sigma <- par[1]
-    -sum(dmvnorm(x = data, mu = mu, Sigma = sigma, log = True))
+    mu = par[0]
+    sigma = par[1]
+    -sum(dmvnorm(x = data, mu, sigma, log = TRUE))
   }
-  mle = optim(par = c(mu = 1, sigma = 1), fn = nll, data = sample, method = "L-BFGS-B",
-              control = list(parscale = c(mu = 1, sigma = 1)))
-  return(mle)
+  mle = optim(par = c(mu = c(1.0,1.0), sigma = matrix(c(1.0,1.0,1.0,1.0), 2, 2), fn = nll, data = sample, method = "L-BFGS-B",
+                      control = list(parscale = c(mu = c(1.0,1.0), sigma = matrix(c(1.0,1.0,1.0,1.0), 2, 2)))))
+              return(mle)
 }
 
 # calculate mle of multinomial distribution -
@@ -29,7 +29,7 @@ calculate_multinom_mle <- function(sample) {
   nll <- function(parameters, data) {
     
     p = parameters
-   # cat("p",p)
+    # cat("p",p)
     #-sum(dmultinom(x=data[,1], size=NULL, prob=p, log=TRUE))
     
     -sum(apply(X = data,MARGIN = 2,FUN = dmultinom,size =1, prob = p, log = TRUE))
@@ -150,108 +150,106 @@ calculate_normal_mle <- function (sample) {
 
 main <- function (sample_vec,dist_type)
 {
+  
+  
+  if(dist_type == "uniform" || dist_type == "Uniform" || dist_type == "UNIFORM")
+  {
+    uniform_sample = runif(10, -10, 10)
+    uniform_mle = calculate_uniform_mle(uniform_sample)
+    cat("\n\ndistribution type is ",dist_type)
+    cat("\n\nsample is\n",sample,"\n")
+    cat("MLE is given Below\n")
+    print(uniform_mle$par)
     
+  }
+  
+  else if(dist_type == "beta" || dist_type == "Beta" || dist_type == "BETA")
+  {
+    sample = rbeta(10,1,10)
+    cat(sample)
+    sample_mle = calculate_beta_mle(sample)
+    cat("\n\ndistribution type is ",dist_type)
+    cat("\n\nsample is\n",sample,"\n")
+    cat("MLE is given Below\n")
+    print(sample_mle$par)
     
-    if(dist_type == "uniform" || dist_type == "Uniform" || dist_type == "UNIFORM")
-    {
-      uniform_sample = runif(10, -10, 10)
-      uniform_mle = calculate_uniform_mle(uniform_sample)
-      cat("\n\ndistribution type is ",dist_type)
-      cat("\n\nsample is\n",sample,"\n")
-      cat("MLE is given Below\n")
-      print(uniform_mle$par)
-      
-    }
+  }
+  else if(dist_type == "normal" || dist_type == "Normal" || dist_type == "NORMAL")
+  {
+    sample = rnorm(10)
+    normal_mle = calculate_normal_mle(sample)
+    cat("\n\ndistribution type is ",dist_type)
+    cat("\n\nsample is\n",sample,"\n")
+    cat("MLE is given Below\n")
+    print(normal_mle$par)
+  }
+  else if(dist_type=="poisson"||dist_type=="Poisson"||dist_type=="POISSON")
+  {
     
-    else if(dist_type == "beta" || dist_type == "Beta" || dist_type == "BETA")
-    {
-      sample = rbeta(10,1,10)
-      cat(sample)
-      sample_mle = calculate_beta_mle(sample)
-      cat("\n\ndistribution type is ",dist_type)
-      cat("\n\nsample is\n",sample,"\n")
-      cat("MLE is given Below\n")
-      print(sample_mle$par)
-      
-    }
-    else if(dist_type == "normal" || dist_type == "Normal" || dist_type == "NORMAL")
-    {
-      sample = rnorm(10)
-      normal_mle = calculate_normal_mle(sample)
-      cat("\n\ndistribution type is ",dist_type)
-      cat("\n\nsample is\n",sample,"\n")
-      cat("MLE is given Below\n")
-      print(normal_mle$par)
-    }
-    else if(dist_type=="poisson"||dist_type=="Poisson"||dist_type=="POISSON")
-    {
-      
-      sample = rpois(10, 8)
-      poisson_mle = calculate_poisson_mle(sample)
-      cat("\n\ndistribution type is ",dist_type)
-      cat("\n\nsample is\n",sample,"\n")
-      cat("MLE is given Below\n")
-      print(poisson_mle$par)
-      posison_os = onestep_pois(sample, 8, 100)
-      cat("The approximated MLE value using one-step is",posison_os,"\n")
-    }
-
-    else if(dist_type=="geometric"||dist_type=="Geometric"||dist_type=="GEOMETRIC")
-    {
-      
-      sample = rgeom(10, 0.4)
-      cat("\n\ndistribution type is ",dist_type)
-      cat("\n\nsample is\n",sample,"\n")
-      cat("MLE is given Below\n")
-      geom_mle = calculate_geometric_mle(sample)
-      print(geom_mle$par)
-    }
-    else if(dist_type=="binomial"||dist_type=="Binomial"||dist_type=="BINOMIAL")
-    {
-      sample = rbinom(4,10,0.5)
-      cat("\n\ndistribution type is ",dist_type)
-      cat("\n\nsample is\n",sample,"\n")
-      cat("MLE is given Below\n")
-      binom_mle = calculate_binom_mle(sample)
-      print(binom_mle$par)
-    }
-    else if(dist_type=="exponential"||dist_type=="Exponential"||dist_type=="EXPONENTIAL")
-    {
-      sample = rexp(5)
-      cat("\n\ndistribution type is ",dist_type)
-      cat("\n\nsample is\n",sample,"\n")
-      cat("MLE is given Below\n")
-      sample_mle = calculate_exp_mle(sample)
-      print(sample_mle$par)
-    }
-    else if(dist_type=="multinomial"||dist_type=="Multinomial"||dist_type=="MULTINOMIAL")
-    {
-      sample = rmultinom(5,1,rep(1/10,10))
-      cat("\n\ndistribution type is ",dist_type)
-      cat("\n\nsample is\n",sample,"\n")
-      cat("MLE is given Below\n")
-      sample_mle = calculate_multinom_mle(sample)
-      print(sample_mle$par)
-    }
+    sample = rpois(10, 8)
+    poisson_mle = calculate_poisson_mle(sample)
+    cat("\n\ndistribution type is ",dist_type)
+    cat("\n\nsample is\n",sample,"\n")
+    cat("MLE is given Below\n")
+    print(poisson_mle$par)
+    posison_os = onestep_pois(sample, 8, 100)
+    cat("The approximated MLE value using one-step is",posison_os,"\n")
+  }
+  
+  else if(dist_type=="geometric"||dist_type=="Geometric"||dist_type=="GEOMETRIC")
+  {
     
-    else if(dist_type =="Multivariate Normal"||dist_type=="multivariate normal"||dist_type=="MULTIVARIATE NORMA")
-      
-    {
-      sigma <- matrix(c(3,2,2,6), 2, 2)
-      mu <- c(5,10)
-      sample <- rmvnorm(10, mean = mu, sigma = sigma)
-      cat("\n\ndistribution type is ",dist_type)
-      cat("\n\nsample is")
-      print(sample)
-      cat("MLE is given Below\n")
-      sample_mle = calculate_multivariate_mle(sample)
-      print(sample_mle$par)
-    }
+    sample = rgeom(10, 0.4)
+    cat("\n\ndistribution type is ",dist_type)
+    cat("\n\nsample is\n",sample,"\n")
+    cat("MLE is given Below\n")
+    geom_mle = calculate_geometric_mle(sample)
+    print(geom_mle$par)
+  }
+  else if(dist_type=="binomial"||dist_type=="Binomial"||dist_type=="BINOMIAL")
+  {
+    sample = rbinom(4,10,0.5)
+    cat("\n\ndistribution type is ",dist_type)
+    cat("\n\nsample is\n",sample,"\n")
+    cat("MLE is given Below\n")
+    binom_mle = calculate_binom_mle(sample)
+    print(binom_mle$par)
+  }
+  else if(dist_type=="exponential"||dist_type=="Exponential"||dist_type=="EXPONENTIAL")
+  {
+    sample = rexp(5)
+    cat("\n\ndistribution type is ",dist_type)
+    cat("\n\nsample is\n",sample,"\n")
+    cat("MLE is given Below\n")
+    sample_mle = calculate_exp_mle(sample)
+    print(sample_mle$par)
+  }
+  else if(dist_type=="multinomial"||dist_type=="Multinomial"||dist_type=="MULTINOMIAL")
+  {
+    sample = rmultinom(5,1,rep(1/10,10))
+    cat("\n\ndistribution type is ",dist_type)
+    cat("\n\nsample is\n",sample,"\n")
+    cat("MLE is given Below\n")
+    sample_mle = calculate_multinom_mle(sample)
+    print(sample_mle$par)
+  }
+  
+  else if(dist_type =="Multivariate Normal"||dist_type=="multivariate normal"||dist_type=="MULTIVARIATE NORMA")
     
-
+  {
+    sigma <- matrix(c(3,2,2,6), 2, 2)
+    mu <- c(5,10)
+    sample <- rmvnorm(10, mean = mu, sigma = sigma)
+    cat("\n\ndistribution type is ",dist_type)
+    cat("\n\nsample is")
+    print(sample)
+    cat("MLE is given Below\n")
+    sample_mle = calculate_multivariate_mle(sample)
+    print(sample_mle$par)
+  }
+  
 }
 
 main(c(),'multivariate normal')
 
-main(c(),'binomial')
 
