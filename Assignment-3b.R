@@ -10,17 +10,18 @@ calculate_binom_mle <- function(sample) {
   return(mle)
 }
 
-# calculate mle of multivariate distribution
+# calculate MLE of multivariate distribution
 calculate_multivariate_mle <- function(sample) {
   # calculate negative log likelihood
   nll <- function(par, data) {
-    mu = par[0]
-    sigma = par[1]
+    mu = c(par[1], par[2])
+    #print(mu)
+    sigma = matrix(c(par[3], par[4], par[5], par[6]), 2, 2)
+    print(sigma)
     -sum(dmvnorm(x = data, mu, sigma, log = TRUE))
   }
-  mle = optim(par = c(mu = c(1.0,1.0), sigma = matrix(c(1.0,1.0,1.0,1.0), 2, 2), fn = nll, data = sample, method = "L-BFGS-B",
-                      control = list(parscale = c(mu = c(1.0,1.0), sigma = matrix(c(1.0,1.0,1.0,1.0), 2, 2)))))
-              return(mle)
+  mle = optim(par = c(mu = c(1,1), sigma = matrix(c(2,2,2,2), 2, 2)), fn = nll, data = sample, method = "Nelder-Mead")
+  return(mle)
 }
 
 # calculate mle of multinomial distribution -
