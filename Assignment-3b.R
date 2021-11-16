@@ -1,4 +1,5 @@
 library(mvtnorm)
+library(micEcon)
 # calculate mle of binomial distribution -
 calculate_binom_mle <- function(sample) {
   # calculate negative log likelihood
@@ -21,7 +22,7 @@ calculate_multivariate_mle <- function(sample) {
     #print(sigma)
     -sum(dmvnorm(x = data, mu, sigma, log = TRUE))
   }
-  mle = optim(par = c(mu = c(2,2), sigma = matrix(c(2,2,2,2), 2, 2)), fn = nll, data = sample, method = "Nelder-Mead")
+  mle = optim(par = c(mu = c(2,2), sigma = matrix(c(2,2,2,2), 2, 2)), fn = nll, data = sample, method = "SANN")
   return(mle)
 }
 
