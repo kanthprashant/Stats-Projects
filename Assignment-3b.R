@@ -254,6 +254,6 @@ main <- function (sample_vec,dist_type)
   
 }
 
-main(c(),'multivariate normal')
+main(c(),'poisson')
 
 
