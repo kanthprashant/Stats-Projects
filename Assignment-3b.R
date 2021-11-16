@@ -1,5 +1,4 @@
 library(mvtnorm)
-library(HelpersMG)
 # calculate mle of binomial distribution -
 calculate_binom_mle <- function(sample) {
   # calculate negative log likelihood
@@ -18,12 +17,14 @@ calculate_multivariate_mle <- function(sample) {
     mu = c(par[1], par[2])
     #print(mu)
     sigma = matrix(c(par[3], par[4], par[5], par[6]), 2, 2)
-    print(sigma)
+    sigma[lower.tri(sigma)] = t(sigma)[lower.tri(sigma)]
+    #print(sigma)
     -sum(dmvnorm(x = data, mu, sigma, log = TRUE))
   }
   mle = optim(par = c(mu = c(2,2), sigma = matrix(c(2,2,2,2), 2, 2)), fn = nll, data = sample, method = "Nelder-Mead")
   return(mle)
 }
+
 
 # calculate mle of multinomial distribution -
 calculate_multinom_mle <- function(sample) {
@@ -236,11 +237,11 @@ main <- function (sample_vec,dist_type)
     print(sample_mle$par)
   }
   
-  else if(dist_type =="Multivariate Normal"||dist_type=="multivariate normal"||dist_type=="MULTIVARIATE NORMA")
+  else if(dist_type =="Multivariate Normal"||dist_type=="multivariate normal"||dist_type=="MULTIVARIATE NORMAL")
     
   {
-    sigma <- matrix(c(3,2,2,6), 2, 2)
-    mu <- c(5,10)
+    sigma <- matrix(c(3,2,2,8), 2, 2)
+    mu <- c(7,10)
     sample <- rmvnorm(10, mean = mu, sigma = sigma)
     cat("\n\ndistribution type is ",dist_type)
     cat("\n\nsample is")
