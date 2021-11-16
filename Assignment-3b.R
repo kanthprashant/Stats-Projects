@@ -152,14 +152,14 @@ calculate_normal_mle <- function (sample) {
 }
 
 
-main <- function (sample_vec,dist_type)
+main <- function (sample,dist_type)
 {
   
   
   if(dist_type == "uniform" || dist_type == "Uniform" || dist_type == "UNIFORM")
   {
-    uniform_sample = runif(10, -10, 10)
-    uniform_mle = calculate_uniform_mle(uniform_sample)
+    
+    uniform_mle = calculate_uniform_mle(sample)
     cat("\n\ndistribution type is ",dist_type)
     cat("\n\nsample is\n",sample,"\n")
     cat("MLE is given Below\n")
@@ -169,7 +169,7 @@ main <- function (sample_vec,dist_type)
   
   else if(dist_type == "beta" || dist_type == "Beta" || dist_type == "BETA")
   {
-    sample = rbeta(10,1,10)
+    
     cat(sample)
     sample_mle = calculate_beta_mle(sample)
     cat("\n\ndistribution type is ",dist_type)
@@ -180,7 +180,7 @@ main <- function (sample_vec,dist_type)
   }
   else if(dist_type == "normal" || dist_type == "Normal" || dist_type == "NORMAL")
   {
-    sample = rnorm(10)
+    
     normal_mle = calculate_normal_mle(sample)
     cat("\n\ndistribution type is ",dist_type)
     cat("\n\nsample is\n",sample,"\n")
@@ -190,7 +190,7 @@ main <- function (sample_vec,dist_type)
   else if(dist_type=="poisson"||dist_type=="Poisson"||dist_type=="POISSON")
   {
     
-    sample = rpois(10, 8)
+    
     poisson_mle = calculate_poisson_mle(sample)
     cat("\n\ndistribution type is ",dist_type)
     cat("\n\nsample is\n",sample,"\n")
@@ -203,7 +203,7 @@ main <- function (sample_vec,dist_type)
   else if(dist_type=="geometric"||dist_type=="Geometric"||dist_type=="GEOMETRIC")
   {
     
-    sample = rgeom(10, 0.4)
+    
     cat("\n\ndistribution type is ",dist_type)
     cat("\n\nsample is\n",sample,"\n")
     cat("MLE is given Below\n")
@@ -212,7 +212,7 @@ main <- function (sample_vec,dist_type)
   }
   else if(dist_type=="binomial"||dist_type=="Binomial"||dist_type=="BINOMIAL")
   {
-    sample = rbinom(4,10,0.5)
+    
     cat("\n\ndistribution type is ",dist_type)
     cat("\n\nsample is\n",sample,"\n")
     cat("MLE is given Below\n")
@@ -221,7 +221,7 @@ main <- function (sample_vec,dist_type)
   }
   else if(dist_type=="exponential"||dist_type=="Exponential"||dist_type=="EXPONENTIAL")
   {
-    sample = rexp(5)
+    
     cat("\n\ndistribution type is ",dist_type)
     cat("\n\nsample is\n",sample,"\n")
     cat("MLE is given Below\n")
@@ -230,7 +230,7 @@ main <- function (sample_vec,dist_type)
   }
   else if(dist_type=="multinomial"||dist_type=="Multinomial"||dist_type=="MULTINOMIAL")
   {
-    sample = rmultinom(5,1,rep(1/10,10))
+    
     cat("\n\ndistribution type is ",dist_type)
     cat("\n\nsample is\n",sample,"\n")
     cat("MLE is given Below\n")
@@ -241,9 +241,6 @@ main <- function (sample_vec,dist_type)
   else if(dist_type =="Multivariate Normal"||dist_type=="multivariate normal"||dist_type=="MULTIVARIATE NORMAL")
     
   {
-    sigma <- matrix(c(3,2,2,8), 2, 2)
-    mu <- c(7,10)
-    sample <- rmvnorm(10, mean = mu, sigma = sigma)
     cat("\n\ndistribution type is ",dist_type)
     cat("\n\nsample is")
     print(sample)
