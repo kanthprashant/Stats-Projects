@@ -1,5 +1,5 @@
 library(Rlab)
-SPRT <- function(type1.err = 0.01, type2.err = 0.01, h0, h1, rv=dbinom(1, 1, 0.4)) {
+SPRT <- function(type1.err = 0.01, type2.err = 0.01, h0, h1, rv) {
   # Bernoulli Random Variable p <= .45 vs P >=.55 using a SPRT
   # At a1 = a0 = 0.01 have the alphas as input variables
   # Have n, the input sequence, and the accepted hypothesis as output variables
@@ -12,28 +12,36 @@ SPRT <- function(type1.err = 0.01, type2.err = 0.01, h0, h1, rv=dbinom(1, 1, 0.4
   # k = # successes in n trials
 
   # LLR 
-  a = type2.err / (1 - type1.err)
-  b = (1 - type2.err) / type1.err
+  a = log((type2.err) / (1-type1.err))
+  b = log((1-type2.err) / (type1.err))
+  print(a)
+  print(b)
   
   n = length(rv)
   k = sum(rv, na.rm = TRUE)
+  print(k)
   
   k.coeff = (log(h1 / (1-h1))) - (log(h0) / (1-h0))
   n.coeff = ((-1 * log(1-h1)) - (-1 * log(1-h0)) * -1)
+  #print(k.coeff)
+  #print(n.coeff)
   
-  llr <- (k * k.coeff) / (n * n.coeff)
+  llr <- n * n.coeff + k * k.coeff
+  print(llr)
 
   decision <- NULL
   msg <- NULL
-  if (llr < a) {
+  if (llr <= a) {
     decision <- TRUE
     msg <- "Accept h0"
-  } else if (llr > b) {
+  } else if (llr >= b) {
     decision <- FALSE
     msg <- "Accept h1"
   } else {
-    decision <- NA
-    msg <- "Keep testing"
+    decision <- NULL
+    msg <- "Resample, Try again"
+    #resample <- sample(rv)
+    #SPRT(type1.err, type2.err, h0, h1, resample)
   }
   
   output <- list(n = n, 
@@ -70,12 +78,14 @@ simulation <- function() {
   trial.54.na = 0
   
   # Bernoulli 0.3
-  for (x in 1:1000) {
+  for (x in 1:7) {
     rv <- rbinom(1, 1, 0.3)
+    print(rv)
     sprt_result <- SPRT(type1 = 0.01, type2 = 0.01, h0 = 0.45, h1 = 0.55, rv=rv)
-    if (is.na(sprt_result$decision)) {
+    #print(sprt_result$decision)
+    if (is.null(sprt_result$decision)) {
       trial.3.na  = trial.3.na + 1
-    } else if (sprt_result == TRUE) {
+    } else  if (sprt_result$decision == TRUE) {
       trial.3.true  = trial.3.true + 1
     } else {
       trial.3.false  = trial.3.false + 1
@@ -94,12 +104,14 @@ simulation <- function() {
   
   
   # Bernoulli 0.56 
-  for (x in 1:1000) {
+  for (x in 1:7) {
     rv <- rbinom(1, 1, 0.56)
+    print(rv)
     sprt_result <- SPRT(type1 = 0.01, type2 = 0.01, h0 = 0.45, h1 = 0.55, rv=rv)
-    if (is.na(sprt_result$decision)) {
+    #print(sprt_result$decision)
+    if (is.null(sprt_result$decision)) {
       trial.56.na  = trial.56.na + 1
-    } else if (sprt_result == TRUE) {
+    } else if (sprt_result$decision == TRUE) {
       trial.56.true  = trial.56.true + 1
     } else {
       trial.56.false  = trial.56.false + 1
@@ -116,12 +128,14 @@ simulation <- function() {
   cat("Number of trials return NA:", trial.56.na)
   cat("\n")
   
-  for (x in 1:1000) {
+  for (x in 1:7) {
     rv <- rbinom(1, 1, 0.54)
+    print(rv)
     sprt_result <- SPRT(type1 = 0.01, type2 = 0.01, h0 = 0.45, h1 = 0.55, rv=rv)
-    if (is.na(sprt_result$decision)) {
+    #print(sprt_result$decision)
+    if (is.null(sprt_result$decision)) {
       trial.54.na  = trial.54.na + 1
-    } else if (sprt_result == TRUE) {
+    } else if (sprt_result$decision == TRUE) {
       trial.54.true  = trial.54.true + 1
     } else {
       trial.54.false  = trial.54.false + 1
@@ -137,14 +151,17 @@ simulation <- function() {
   cat("\n")
   cat("Number of trials return NA:", trial.54.na)
   cat("\n")
+}
+
+calculate_binom_mle <- function(sample) {
+  # calculate negative log likelihood
+  nll <- function(data, n, p) {
+    -sum(dbinom(x=data, size=n, prob=p, log=TRUE))
+  }
   
+  mle = optim(par = c(p = 0.5), n = 10, fn = nll, data = sample, method = "BFGS")
+  return(mle)
 }
 
 simulation()
-#for (x in 1:1000) {
-#  rv <- rbinom(1, 1, 0.5)
-#  sprt_result <- SPRT(type1 = 0.45, type2 = 0.55, h0 = 0.45, h1 = 0.55, rv=rv)
-#  print(sprt_result$decision)
-#}
-
 
