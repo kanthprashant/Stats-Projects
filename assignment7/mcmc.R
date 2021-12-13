@@ -24,7 +24,7 @@ likelihood <- function(x,data){
   c[1,2] = x[4]
   c[2,1] = x[4]
   c[2,2] = x[5]
-  return(sum(dmvnorm(data,m,c))) 
+  return(prod(dmvnorm(data,m,c))) 
   
 }
 
